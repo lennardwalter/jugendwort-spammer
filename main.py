@@ -6,7 +6,7 @@ from time import sleep
 
 
 # thread count, insert whatever you want
-THREAD_COUNT = 5
+THREAD_COUNT = 69
 
 
 def main():
