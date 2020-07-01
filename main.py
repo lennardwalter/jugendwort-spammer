@@ -19,7 +19,7 @@ def main():
         check_box  = driver.find_element_by_class_name("checkbox-button-display")
         submit_btn = driver.find_element_by_css_selector("button[type='submit']")
 
-        age_select.select_by_index(randint(1,3))
+        age_select.select_by_index(randint(1,2))
         text_field.send_keys("Hurensohn")
         check_box.click()
         
