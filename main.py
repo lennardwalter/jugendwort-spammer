@@ -22,11 +22,14 @@ def main():
         age_select.select_by_index(randint(1,3))
         text_field.send_keys("Hurensohn")
         check_box.click()
-        submit_btn.click()
         
         # the time we were on the site is send to the server (probably for bot protection)
         # so we just wait some time
         sleep(3)
+
+        submit_btn.click()
+        
+        sleep(1)
 
         driver.quit()
 
