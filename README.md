@@ -8,3 +8,17 @@ Langenscheidt (a German publishing house) organizes every year the selection for
 Besides Python 3 and Selenium you also need [chromedriver](https://chromedriver.chromium.org/downloads) available in your PATH. 
 
 If someone wants to contribute, he could reverse-engineer the requests to surveymonkey (cookies...) so that we can submit our proposal (theoretically, of course) even more frequently.
+
+
+Übersetzung (Deutsch):
+
+**Natürlich nur aus Bildungsgründen.**
+
+Für alle die kein Deutsch sprechen: Lernt Deutsch, ihr Hurensöhne!
+Dieses Manuskript basiert auf einem MaiMai aus dem Unter [ich_iel](https://reddit.com/r/ich_iel). Dort werden ~Hurensöhne~ Leute, die kein Deutsch sprechen als Hurensöhne (Sohn einer Hure) bezeichnet.
+
+Der Langenscheidt-Verlag wählt jedes Jahr ein Jugendwort. Die letzten Jahre waren dies aber immer wieder Wörter, die von 60 jährigen Jugendlichen benutzt worden sind. Aber dieses Jahr haben wir die Chance selbst Wörter vorzuschlagen. Das ist der Grund warum dieses Manuskript geschrieben wurde.
+
+Neben Schlange 3 und Selen wird auch noch [ChromFahrer](https://chromedriver.chromium.org/downloads) im PFAD verwendet.
+
+Wenn jemand mithelfen möchte, dann kann er die Anfragen an UmfragenAffe (Kekse...) rekonstruieren, damit wir unseren Vorschlag (rein theoretisch) noch häufiger einsenden.
