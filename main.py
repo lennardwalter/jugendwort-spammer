@@ -4,21 +4,25 @@ import threading
 from random import randint
 from time import sleep
 
-# thread count, insert whatever you want
-THREAD_COUNT = 69
-
-
+# insert whatever you want (and you pc can handle)
+THREAD_COUNT = 6
+# edit if chromedriver is not in path
+PATH_TO_CHROMEDRIVER = "chromedriver"
 def main():
     try:
         # images aren't loaded to increase performance
-        chromeOptions = webdriver.ChromeOptions()
+        chrome_options = webdriver.ChromeOptions()
         prefs = {"profile.managed_default_content_settings.images": 2}
-        chromeOptions.add_experimental_option("prefs", prefs)
+        chrome_options.add_experimental_option("prefs", prefs)
         
-        driver = webdriver.Chrome(options=chromeOptions)
+        if PATH_TO_CHROMEDRIVER is not None:
+            driver = webdriver.Chrome(PATH_TO_CHROMEDRIVER, options=chrome_options)
+        else:
+            driver = webdriver.Chrome(options=chrome_options)
+        
         # waits 10s if it doesn't find an item right away to avoid NoSuchElementException
         driver.implicitly_wait(10)
-        
+
         driver.get("https://www.surveymonkey.com/r/7JZRVLJ")
         
         age_select = Select(driver.find_element_by_xpath(
