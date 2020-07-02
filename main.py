@@ -13,6 +13,7 @@ from time import sleep
 THREAD_COUNT = 3
 
 def main():
+    try:
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("-incognito")	
 
@@ -44,6 +45,8 @@ def main():
     
     # sometimes randomly giving me element not found exceptions. 
     # but i'm to lazy to fix it so....
+    except:
+        driver.quit()
 
 
 
