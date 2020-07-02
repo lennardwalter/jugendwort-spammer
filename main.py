@@ -11,18 +11,16 @@ THREAD_COUNT = 69
 def main():
     try:
         # images aren't loaded to increase performance
-        option = webdriver.ChromeOptions()
-        chrome_prefs = {}
-        option.experimental_options["prefs"] = chrome_prefs
-        chrome_prefs["profile.default_content_settings"] = {"images": 2}
-        chrome_prefs["profile.managed_default_content_settings"] = {"images": 2}
-
-        driver = webdriver.Chrome(options=option)
+        chromeOptions = webdriver.ChromeOptions()
+        prefs = {"profile.managed_default_content_settings.images": 2}
+        chromeOptions.add_experimental_option("prefs", prefs)
+        
+        driver = webdriver.Chrome(options=chromeOptions)
         # waits 10s if it doesn't find an item right away to avoid NoSuchElementException
         driver.implicitly_wait(10)
-
+        
         driver.get("https://www.surveymonkey.com/r/7JZRVLJ")
-
+        
         age_select = Select(driver.find_element_by_xpath(
             "/html/body/main/article/section/form/div[1]/div[1]/div/div/fieldset/div/select"))
         text_field = driver.find_element_by_xpath(
@@ -45,10 +43,9 @@ def main():
         driver.quit()
 
         print("WIR WAREN ERFOLGREICH, MEINE BUBEN!")
-
-    # sometimes randomly giving me element not found exceptions.
-    # but i'm to lazy to fix it so....
-    except:
+        
+    except Exception as e:
+        print(e)
         driver.quit()
 
 
