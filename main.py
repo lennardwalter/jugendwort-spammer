@@ -4,14 +4,21 @@ import threading
 from random import randint
 from time import sleep
 
+#path = "PATH/TO/CHROMEDRIVER" # Only use when you dont have the normal path, or have some difficulties.
+# enter the path to your chromedriver.
 
 # thread count, insert whatever you want
-THREAD_COUNT = 69
 
+# dont put a number thats too high, or your computer might crash lol. It has to be more than 1, or it wont do anything.
+THREAD_COUNT = 3
 
 def main():
-    try:
-        driver = webdriver.Chrome()
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument("-incognito")	
+
+        driver = webdriver.Chrome(options=chrome_options)
+        #driver = webdriver.Chrome(path,options=chrome_options) # Use this instead, when you dont use the normal path
+        
         driver.get("https://www.surveymonkey.com/r/7JZRVLJ")
 
         age_select = Select(driver.find_element_by_xpath("/html/body/main/article/section/form/div[1]/div[1]/div/div/fieldset/div/select"))
@@ -37,8 +44,8 @@ def main():
     
     # sometimes randomly giving me element not found exceptions. 
     # but i'm to lazy to fix it so....
-    except:
-        driver.quit()
+
+
 
 if __name__ == "__main__":
     while True:
