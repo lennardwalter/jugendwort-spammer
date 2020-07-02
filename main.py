@@ -4,7 +4,7 @@ import threading
 from random import randint
 from time import sleep
 
-# insert whatever you want (and you pc can handle)
+# insert whatever you want (and your pc can handle)
 THREAD_COUNT = 6
 # edit if chromedriver is not in path
 PATH_TO_CHROMEDRIVER = "chromedriver"
@@ -14,12 +14,9 @@ def main():
         chrome_options = webdriver.ChromeOptions()
         prefs = {"profile.managed_default_content_settings.images": 2}
         chrome_options.add_experimental_option("prefs", prefs)
-        
-        if PATH_TO_CHROMEDRIVER is not None:
-            driver = webdriver.Chrome(PATH_TO_CHROMEDRIVER, options=chrome_options)
-        else:
-            driver = webdriver.Chrome(options=chrome_options)
-        
+
+        driver = webdriver.Chrome(PATH_TO_CHROMEDRIVER, options=chrome_options)
+
         # waits 10s if it doesn't find an item right away to avoid NoSuchElementException
         driver.implicitly_wait(10)
 
