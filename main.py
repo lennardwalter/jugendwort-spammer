@@ -8,6 +8,8 @@ from time import sleep
 THREAD_COUNT = 6
 # edit if chromedriver is not in path
 PATH_TO_CHROMEDRIVER = "chromedriver"
+
+
 def main():
     try:
         # images aren't loaded to increase performance
@@ -21,13 +23,15 @@ def main():
         driver.implicitly_wait(10)
 
         driver.get("https://www.surveymonkey.com/r/7JZRVLJ")
-        
+
         age_select = Select(driver.find_element_by_xpath(
             "/html/body/main/article/section/form/div[1]/div[1]/div/div/fieldset/div/select"))
         text_field = driver.find_element_by_xpath(
             "/html/body/main/article/section/form/div[1]/div[2]/div/div/div/div/div/div/input")
-        check_box = driver.find_element_by_class_name("checkbox-button-display")
-        submit_btn = driver.find_element_by_css_selector("button[type='submit']")
+        check_box = driver.find_element_by_class_name(
+            "checkbox-button-display")
+        submit_btn = driver.find_element_by_css_selector(
+            "button[type='submit']")
 
         age_select.select_by_index(randint(1, 2))
         text_field.send_keys("Hurensohn")
@@ -35,7 +39,7 @@ def main():
 
         # the time we were on the site is send to the server (probably for bot protection)
         # so we just wait some time
-        sleep(3)
+        sleep(randint(3, 10))
 
         submit_btn.click()
 
@@ -44,7 +48,7 @@ def main():
         driver.quit()
 
         print("WIR WAREN ERFOLGREICH, MEINE BUBEN!")
-        
+
     except Exception as e:
         print(e)
         driver.quit()
