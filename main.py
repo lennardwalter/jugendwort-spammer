@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from random import randint
 
 # insert whatever you want (and your pc can handle)
-THREAD_COUNT = 6
+THREAD_COUNT = 25
 
 SURVEY_URL = "https://www.surveymonkey.com/r/7JZRVLJ"
 
