@@ -14,7 +14,7 @@ SURVEY_URL = "https://www.surveymonkey.com/r/7JZRVLJ"
 def get_proxies():
     # parse free proxies (only german proxies)
     res = requests.get(
-        "https://api.proxyscrape.com/?request=getproxies&proxytype=http&country=de", allow_redirects=True)
+        "https://api.proxyscrape.com/?request=getproxies&proxytype=http", allow_redirects=True)
 
     return res.text.split("\r\n")
 
