@@ -3,21 +3,27 @@ import requests
 import time
 from bs4 import BeautifulSoup
 from random import randint, choice
+import argparse
 
-# insert whatever you want (and your pc can handle)
+
 THREAD_COUNT = 10
-
 SURVEY_URL = "https://www.surveymonkey.com/r/7JZRVLJ"
 
 
-def get_proxies():
+def get_proxies() -> list:
     res = requests.get(
         "https://api.proxyscrape.com/?request=getproxies&proxytype=http", allow_redirects=True)
-
     return res.text.split("\r\n")
 
 
-def main(proxy):
+def get_proxies_from_proxylist(path) -> list:
+    f = open(path, "r")
+    l = [line.rstrip("\n") for line in f]
+    f.close()
+    return l
+
+
+def vote_thread(proxy):
     try:
         # first make request to get validation string (csrf) and cookies
         session = requests.Session()
@@ -27,15 +33,17 @@ def main(proxy):
         csrf_token = soup.find("input", {"id": "survey_data"})["value"]
         # generate random boundary number (necessary for the valid form data)
         boundaryNumber = str(randint(10**29, 10**30))
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
-                   "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-                   "Accept-Language": "de,en-US;q=0.7,en;q=0.3",
-                   "Accept-Encoding": "gzip, deflate",
-                   "Content-Type": "multipart/form-data; boundary=---------------------------" + boundaryNumber,
-                   "Origin": "https://www.surveymonkey.com",
-                   "Connection": "close",
-                   "Referer": "https://www.surveymonkey.com/r/7JZRVLJ",
-                   "Upgrade-Insecure-Requests": "1"}
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language": "de,en-US;q=0.7,en;q=0.3",
+            "Accept-Encoding": "gzip, deflate",
+            "Content-Type": "multipart/form-data; boundary=---------------------------" + boundaryNumber,
+            "Origin": "https://www.surveymonkey.com",
+            "Connection": "close",
+            "Referer": "https://www.surveymonkey.com/r/7JZRVLJ",
+            "Upgrade-Insecure-Requests": "1"
+        }
         # generate random time spent on website
         start_time = int(time.time()) - randint(70, 130)
         end_time = start_time + randint(50, 100)
@@ -56,12 +64,37 @@ def main(proxy):
     except Exception as e:
         print(e)
         print("EIN FEHLER IST AUFGETRETEN, MEINE BUBEN!")
+    pass
 
 
 if __name__ == "__main__":
-    proxies = get_proxies()
+    parser = argparse.ArgumentParser(description="Ein Programm um Umfragen für r/ich_iel zu 'verbessern'.",
+                                    epilog="Gemacht mit Python, <3 und Hurensohn. (von hallowed, wwhtrbbtt, flohlen, Flojomojo, simonnnnnnnnnn, pascaaaal, 0x0verflow (der Typ vom @HusoBot)).")
+    parser.add_argument("-threads", type=int,
+                        help="Gleichzeit ausgeführte Threads. Sowas wie ne CPU-Vergewaltigung, nur regulierbar.")
+    parser.add_argument("-url", type=str,
+                        help="Sollte man nicht ändern, kann man aber. Damit kann man die URL zur zu manipulierenden Umfrage bearbeiten.")
+    parser.add_argument("-proxylist", type=str,
+                        help="Hier kannst du deine eigene Proxylist einfügen, falls du eine besitzt.")
+
+    args = parser.parse_args()
+
+    if args.threads:
+        THREAD_COUNT = args.threads
+
+    if args.url:
+        SURVEY_URL = args.url
+
+    proxies = None
+
+    if args.proxylist:
+        proxies = get_proxies_from_proxylist(args.proxylist)
+    else:
+        proxies = get_proxies()
+
     while True:
-        # +1 because the main thread is also returned by enumerate()
+        # +1 because the vote_thread is also returned by enumerate()
         if len(list(threading.enumerate())) < THREAD_COUNT + 1:
-            threading.Thread(target=main, args=[{
+            threading.Thread(target=vote_thread, args=[{
                              "http": choice(proxies)}]).start()
+    pass
