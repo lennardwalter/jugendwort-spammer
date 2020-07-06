@@ -9,10 +9,15 @@ import argparse
 THREAD_COUNT = 10
 SURVEY_URL = "https://www.surveymonkey.com/r/7JZRVLJ"
 
+successful_votes = 0
+failed_votes = 0
+threads_running = 0
+
 
 def get_proxies() -> list:
     res = requests.get(
         "https://api.proxyscrape.com/?request=getproxies&proxytype=http", allow_redirects=True)
+    print("[*] Proxylist von Proxyscrape geladen!")
     return res.text.split("\r\n")
 
 
@@ -20,14 +25,21 @@ def get_proxies_from_proxylist(path) -> list:
     f = open(path, "r")
     l = [line.rstrip("\n") for line in f]
     f.close()
+    print("[*] Proxylist aus Datei geladen!")
     return l
 
 
 def vote_thread(proxy):
+    global successful_votes
+    global failed_votes
+    global threads_running
+
+    threads_running += 1
+
     try:
         # first make request to get validation string (csrf) and cookies
         session = requests.Session()
-        cookie_response = session.get(SURVEY_URL)
+        cookie_response = session.get(SURVEY_URL, proxies=proxy)
         soup = BeautifulSoup(cookie_response.text, 'html.parser')
         # parse the token
         csrf_token = soup.find("input", {"id": "survey_data"})["value"]
@@ -54,21 +66,35 @@ def vote_thread(proxy):
 
         res = session.post(
             SURVEY_URL, headers=headers, data=data, proxies=proxy)
-        print(proxy)
 
         # if this string is in the reponse, the request was successful
         if("Dein Jugendwort ist jetzt bei uns aufgenommen." in res.text):
-            print("WIR WAREN ERFOLGREICH, MEINE BUBEN!")
+            successful_votes += 1
         else:
-            raise Exception("Etwas ist schiefgelaufen!")
-    except Exception as e:
-        print(e)
-        print("EIN FEHLER IST AUFGETRETEN, MEINE BUBEN!")
+            failed_votes += 1
+    except:
+        failed_votes += 1
+
+    threads_running -= 1
+    pass
+
+
+info_loop_stop = False
+
+def info_msg_thread():
+    global threads_running
+    global successful_votes
+    global failed_votes
+    global info_loop_stop
+
+    while not info_loop_stop:
+        print(f"[*] Status - Erfolgreicht: { successful_votes }, Fehlgeschlagen: { failed_votes }, Laufende Threads: { threads_running }.")
+        time.sleep(5)
     pass
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Ein Programm um Umfragen für r/ich_iel zu 'verbessern'.",
+    parser = argparse.ArgumentParser(description="Ein Programm um Umfragen für die Kerle und Kerlinnen von r/ich_iel zu 'verbessern'.",
                                     epilog="Gemacht mit Python, <3 und Hurensohn. (von hallowed, wwhtrbbtt, flohlen, Flojomojo, simonnnnnnnnnn, pascaaaal, 0x0verflow (der Typ vom @HusoBot)).")
     parser.add_argument("-threads", type=int,
                         help="Gleichzeit ausgeführte Threads. Sowas wie ne CPU-Vergewaltigung, nur regulierbar.")
@@ -85,6 +111,7 @@ if __name__ == "__main__":
     if args.url:
         SURVEY_URL = args.url
 
+    print("[*] Lade Proxies...")
     proxies = None
 
     if args.proxylist:
@@ -92,9 +119,21 @@ if __name__ == "__main__":
     else:
         proxies = get_proxies()
 
-    while True:
-        # +1 because the vote_thread is also returned by enumerate()
-        if len(list(threading.enumerate())) < THREAD_COUNT + 1:
-            threading.Thread(target=vote_thread, args=[{
-                             "http": choice(proxies)}]).start()
+    print("[*] Alles Nötige wurde vorbereitet. Lasset die Threads los!")
+    threading.Thread(target=info_msg_thread, args=[]).start()
+
+    try:
+        while True:
+            # +1 because the vote_thread is also returned by enumerate()
+            if len(list(threading.enumerate())) < THREAD_COUNT + 1:
+                threading.Thread(target=vote_thread, args=[{
+                                "http": choice(proxies)}]).start()
+    except KeyboardInterrupt:
+        print("[!] Warte, bis alle Threads gestoppt sind!")
+        info_loop_stop = True
+
+        while threading.enumerate > 1:
+            pass
+        
+        exit()
     pass
