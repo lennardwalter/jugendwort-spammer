@@ -40,7 +40,7 @@ def vote_thread(proxy):
     threads_running += 1
 
     try:
-        # Erster Request um Kekse und einen Validierungs-String zu holen
+        # first make request to get validation string (csrf) and cookies
         session = requests.Session()
         cookie_response = session.get(SURVEY_URL, proxies=proxy)
         soup = BeautifulSoup(cookie_response.text, 'html.parser')
