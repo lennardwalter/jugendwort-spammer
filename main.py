@@ -44,7 +44,7 @@ def vote_thread(proxy):
         session = requests.Session()
         cookie_response = session.get(SURVEY_URL, proxies=proxy)
         soup = BeautifulSoup(cookie_response.text, 'html.parser')
-        # Den Schlüsselwert parsieren
+        # parse the token
         csrf_token = soup.find("input", {"id": "survey_data"})["value"]
         # Eine zufällige Nummer für die Grenznummer generieren
         boundaryNumber = str(randint(10**29, 10**30))
