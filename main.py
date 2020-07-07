@@ -70,7 +70,7 @@ def vote_thread(proxy):
         res = session.post(
             SURVEY_URL, headers=headers, data=data, proxies=proxy)
 
-        # Überprüfen, ob die Anfrage erfolgreich war
+        # if this string is in the reponse, the request was successful
         if("Dein Jugendwort ist jetzt bei uns aufgenommen." in res.text):
             successful_votes += 1
         else:
