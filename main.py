@@ -5,14 +5,14 @@ from bs4 import BeautifulSoup
 from random import randint, choice
 import argparse
 
-
+# standard values
 THREAD_COUNT = 10
 SURVEY_URL = "https://www.surveymonkey.com/r/7JZRVLJ"
 WORD = "Hurensohn"
 
+# global variables for info thread
 successful_votes = 0
 failed_votes = 0
-threads_running = 0
 
 
 def get_proxies() -> list:
@@ -23,11 +23,11 @@ def get_proxies() -> list:
 
 
 def get_proxies_from_proxylist(path) -> list:
-    f = open(path, "r")
-    l = [line.rstrip("\n") for line in f]
-    f.close()
+    file = open(path, "r")
+    proxies = [proxie.rstrip("\n") for proxie in file]
+    file.close()
     print("[*] Proxylist aus Datei geladen!")
-    return l
+    return proxies
 
 
 def vote_thread(proxy):
@@ -37,15 +37,15 @@ def vote_thread(proxy):
     global SURVEY_URL
     global WORD
 
-    threads_running += 1
-
     try:
         # first make request to get validation string (csrf) and cookies
         session = requests.Session()
         cookie_response = session.get(SURVEY_URL, proxies=proxy)
         soup = BeautifulSoup(cookie_response.text, 'html.parser')
+
         # parse the token
         csrf_token = soup.find("input", {"id": "survey_data"})["value"]
+
         # generate random boundary number (necessary for the valid form data)
         boundaryNumber = str(randint(10**29, 10**30))
         headers = {
@@ -59,10 +59,12 @@ def vote_thread(proxy):
             "Referer": "https://www.surveymonkey.com/r/7JZRVLJ",
             "Upgrade-Insecure-Requests": "1"
         }
-        # Eine zufällige Zeit generieren, die auf der Website verbracht wird
+
+        # generate random time for "website visit"
         start_time = int(time.time()) - randint(70, 130)
         end_time = start_time + randint(50, 100)
         time_spent = end_time - start_time + 11300
+
         # generate random age (1: 10-15; 2: 16-20; ...)
         age = randint(1, 4)
         data = f"-----------------------------{ boundaryNumber }\r\nContent-Disposition: form-data; name=\"463803414\"\r\n\r\n{str(3067519627 + age - 1)}\r\n-----------------------------{ boundaryNumber }\r\nContent-Disposition: form-data; name=\"463803684\"\r\n\r\n{ WORD }\r\n-----------------------------{ boundaryNumber }\r\nContent-Disposition: form-data; name=\"483089934[]\"\r\n\r\n3189794655\r\n-----------------------------{ boundaryNumber }\r\nContent-Disposition: form-data; name=\"survey_data\"\r\n\r\n{ csrf_token }\r\n-----------------------------{ boundaryNumber }\r\nContent-Disposition: form-data; name=\"response_quality_data\"\r\n\r\n{{\"question_info\":{{\"qid_463803414\":{{\"number\":1,\"type\":\"dropdown\",\"option_count\":5,\"has_other\":false,\"other_selected\":null,\"relative_position\":[[{ age },0]],\"dimensions\":[5,1],\"input_method\":null,\"is_hybrid\":false}},\"qid_463803684\":{{\"number\":2,\"type\":\"open_ended\",\"option_count\":null,\"has_other\":false,\"other_selected\":null,\"relative_position\":null,\"dimensions\":null,\"input_method\":\"text_typed\",\"is_hybrid\":true}},\"qid_483089934\":{{\"number\":3,\"type\":\"multiple_choice_vertical\",\"option_count\":1,\"has_other\":false,\"other_selected\":null,\"relative_position\":[[0,0]],\"dimensions\":[1,1],\"input_method\":null,\"is_hybrid\":false}}}},\"start_time\":{ start_time },\"end_time\":{ end_time },\"time_spent\":{ time_spent },\"previous_clicked\":false,\"has_backtracked\":false,\"bi_voice\":{{}}}}\r\n-----------------------------{ boundaryNumber }\r\nContent-Disposition: form-data; name=\"is_previous\"\r\n\r\nfalse\r\n-----------------------------{ boundaryNumber }\r\nContent-Disposition: form-data; name=\"disable_survey_buttons_on_submit\"\r\n\r\n\r\n-----------------------------{ boundaryNumber }--\r\n"
@@ -78,37 +80,34 @@ def vote_thread(proxy):
     except:
         failed_votes += 1
 
-    threads_running -= 1
-    pass
-
 
 info_loop_stop = False
 
+
 def info_msg_thread():
-    global threads_running
     global successful_votes
     global failed_votes
     global info_loop_stop
 
     while not info_loop_stop:
-        # prints threads_running, successful_votes, failed_votes every 5s
-        print(f"[*] Status - Erfolgreicht: { successful_votes }, Fehlgeschlagen: { failed_votes }, Laufende Threads: { threads_running }.")
-        time.sleep(5)
-    pass
+        # prints threads_running, successful_votes, failed_votes
+        print(
+            f"[*] Status - Erfolgreicht: { successful_votes }, Fehlgeschlagen: { failed_votes }, Laufende Vote-Threads: { len(threading.enumerate()) - 2 }.", end="\r")
+        time.sleep(1)
 
 
 if __name__ == "__main__":
     # init argparse
     parser = argparse.ArgumentParser(description="Ein Programm um Umfragen für die Kerle und Kerlinnen von r/ich_iel zu 'verbessern'.",
-                                    epilog="Gemacht mit Python, <3 und Hurensohn. (von hallowed, wwhtrbbtt, flohlen, Flojomojo, simonnnnnnnnnn, pascaaaal, 0x0verflow (der Typ vom @HusoBot)).")
+                                     epilog="Gemacht mit Python, <3 und Hurensohn. (von hallowed, wwhtrbbtt, flohlen, Flojomojo, simonnnnnnnnnn, pascaaaal, 0x0verflow).")
     parser.add_argument("-threads", type=int,
-                        help="Gleichzeit ausgeführte Threads. Sowas wie ne CPU-Vergewaltigung, nur regulierbar.")
+                        help="Gleichzeit ausgeführte Vote-Threads. Sowas wie ne CPU-Vergewaltigung, nur regulierbar.")
     parser.add_argument("-url", type=str,
                         help="Sollte man nicht ändern, kann man aber. Damit kann man die URL zur zu manipulierenden Umfrage bearbeiten.")
     parser.add_argument("-proxylist", type=str,
                         help="Hier kannst du deine eigene Proxylist einfügen, falls du eine besitzt.")
     parser.add_argument("-word", type=str,
-                        help="Hier kannst du dein eigenes Jugendwort festlegen. Möge der stärkere gewinnen. (Du nimmst aber natürlich ~Hurensohn~ Schabernack, da es das beste Wort überhaupt ist!)")
+                        help="Hier kannst du dein eigenes Jugendwort festlegen. Möge der stärkere gewinnen. (Du nimmst aber natürlich ~Hurensohn~ Zensurensohn, da es das beste Wort überhaupt ist!)")
 
     args = parser.parse_args()
 
@@ -121,7 +120,7 @@ if __name__ == "__main__":
 
     if args.word:
         WORD = args.word
-        
+
     # print: loading proxies
     print("[*] Lade Proxies...")
     proxies = None
@@ -141,18 +140,17 @@ if __name__ == "__main__":
     # start vote_threads
     try:
         while True:
-            # +1 weil der Hauptthread auch von enumerate() zurückgegeben wird
-            if len(list(threading.enumerate())) < THREAD_COUNT + 1:
+            # +2 because the main thread and the info_msg_thread are also returned by enumerate()
+            if len(list(threading.enumerate())) < THREAD_COUNT + 2:
                 threading.Thread(target=vote_thread, args=[{
-                                "http": choice(proxies)}]).start()
+                    "http": choice(proxies)}]).start()
     except KeyboardInterrupt:
         # stopping programm
         # print: waiting for all threads to be stopped
         print("[!] Warte, bis alle Threads gestoppt sind!")
         info_loop_stop = True
 
-        while threading.enumerate() > 1:
+        while len(threading.enumerate()) > 1:
             pass
-        
+
         exit()
-    pass
