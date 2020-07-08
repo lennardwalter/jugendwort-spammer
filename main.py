@@ -147,7 +147,12 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         # stopping programm
         # print: waiting for all threads to be stopped
-        print("[!] Warte, bis alle Threads gestoppt sind!")
+        # this is really ugly... there has to be a better way to override the characters
+        # i could use sys and clear the line but I don't really want to use two ways of printing
+        # and I'm to lazy to swap out everything
+        # also, this works perfectly
+        print("[!] Warte, bis alle Threads gestoppt sind!" + 40*" ")
+        
         info_loop_stop = True
 
         while len(threading.enumerate()) > 1:
