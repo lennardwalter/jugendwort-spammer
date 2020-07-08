@@ -91,14 +91,14 @@ def info_msg_thread():
     global info_loop_stop
 
     while not info_loop_stop:
-        # Alle 5s den Status ausgeben
+        # prints threads_running, successful_votes, failed_votes every 5s
         print(f"[*] Status - Erfolgreicht: { successful_votes }, Fehlgeschlagen: { failed_votes }, Laufende Threads: { threads_running }.")
         time.sleep(5)
     pass
 
 
 if __name__ == "__main__":
-    # Argumente festlegen
+    # init argparse
     parser = argparse.ArgumentParser(description="Ein Programm um Umfragen für die Kerle und Kerlinnen von r/ich_iel zu 'verbessern'.",
                                     epilog="Gemacht mit Python, <3 und Hurensohn. (von hallowed, wwhtrbbtt, flohlen, Flojomojo, simonnnnnnnnnn, pascaaaal, 0x0verflow (der Typ vom @HusoBot)).")
     parser.add_argument("-threads", type=int,
@@ -112,7 +112,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # Argumente (falls vorhanden) einsetzen
+    # setting args
     if args.threads:
         THREAD_COUNT = args.threads
 
@@ -122,21 +122,23 @@ if __name__ == "__main__":
     if args.word:
         WORD = args.word
         
+    # print: loading proxies
     print("[*] Lade Proxies...")
     proxies = None
 
     if args.proxylist:
-        # Proxyliste aus Datei holen
+        # proxylist from file
         proxies = get_proxies_from_proxylist(args.proxylist)
     else:
-        # Proxyliste von proxyscrape.com holen
+        # proxylist from proxyscrape
         proxies = get_proxies()
 
+    # print: starting threads
     print("[*] Alles Nötige wurde vorbereitet. Lasset die Threads los!")
-    # Informations-Thread starten
+    # start info_msg_thread
     threading.Thread(target=info_msg_thread, args=[]).start()
 
-    # Abstimm-Threads starten (try um Programm beenden zu können)
+    # start vote_threads
     try:
         while True:
             # +1 weil der Hauptthread auch von enumerate() zurückgegeben wird
@@ -144,7 +146,8 @@ if __name__ == "__main__":
                 threading.Thread(target=vote_thread, args=[{
                                 "http": choice(proxies)}]).start()
     except KeyboardInterrupt:
-        # Programm sachte beenden
+        # stopping programm
+        # print: waiting for all threads to be stopped
         print("[!] Warte, bis alle Threads gestoppt sind!")
         info_loop_stop = True
 
