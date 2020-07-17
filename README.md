@@ -21,4 +21,3 @@ Der Langenscheidt-Verlag wählt jedes Jahr ein Jugendwort. Die letzten Jahre war
 
 ~Neben Schlange 3 und Selen wird auch noch [ChromFahrer](https://chromedriver.chromium.org/downloads) im PFAD benötigt.~  
 Nutzt jetzt HTTP-Anfragen! Benötigt werden SchöneSuppe und anfragen.
-
