@@ -6,7 +6,7 @@ This script is based on a meme on the german subreddit [r/ich_iel](https://reddi
 Langenscheidt (a German publishing house) organizes every year the selection for the youth word of the year. The last few years these were rather words that 60 year olds thought youth would use. This year we can submit words ourselves. That's how the idea for this script was born. 
 
 ~Besides Python 3 and Selenium you also need [chromedriver](https://chromedriver.chromium.org/downloads) available in your PATH.~  
-Uses HTTP-requests now! Required are BeatifulSoup and requests.
+Uses HTTP-requests now! Required are BeautifulSoup and requests.
 
 
 
