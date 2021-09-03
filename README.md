@@ -1,3 +1,8 @@
+*Looking at it now, over a year later... I really want to delete this, but I'll leave it here for nostalgic reasons.
+<br>
+To my future employer who stalks my Github: No, I don't randomly call people sons of bitches... Only if they don't speak German :)*
+<br>
+<br>
 **For educational purposes only, of course.**
 
 For all readers who do not speak German: Learn German, du Hurensohn!
